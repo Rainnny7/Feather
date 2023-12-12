@@ -54,7 +54,7 @@ jobs:
 
       # Build the project
       - name: Maven Build
-        run: mvn clean package -e -C6
+        run: mvn clean package -e -T6C
 
       # Publish to Maven
       - name: Publish to Maven
