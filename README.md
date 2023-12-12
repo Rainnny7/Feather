@@ -16,7 +16,7 @@ An all-in-one plugin library to help Java developers make Bungeecord & Spigot pl
 - [Building from Source](#building-from-source)
 
 ## Features
-- N/A
+- TODO
 
 ## Stars
 [![Star History Chart](https://api.star-history.com/svg?repos=Rainnny7/Feather&type=Timeline)](https://star-history.com/#Rainnny7/Feather&Timeline)
