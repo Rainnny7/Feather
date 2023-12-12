@@ -1,0 +1,3 @@
+Copyright (c) $originalComment.match("Copyright \(c\) (\d+)", 1, "-", "$today.year")$today.year Braydon (Rainnny). All rights reserved.
+
+For inquiries, please contact braydonrainnny@gmail.com
