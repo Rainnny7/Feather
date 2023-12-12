@@ -10,7 +10,7 @@ import java.io.Closeable;
  * @author Braydon
  * @param <B> the bootstrap class of this database
  * @param <C> the type of credentials this database uses
- * @param <S> the type of pipeline for this database
+ * @param <S> the type of sync pipeline for this database
  * @param <A> the type of async pipeline for this database
  */
 public interface IDatabase<B, C, S, A> extends Closeable {
