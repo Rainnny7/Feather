@@ -104,7 +104,7 @@ jobs:
             
             ## Gradle (Kotlin DSL)
             ```kotlin
-            implementation("me.braydon:Feather-API:${{ env.RELEASE_VERSION }}")
+            implementation("me.braydon:Feather:${{ env.RELEASE_VERSION }}")
             ```
           files: target/Feather-*.jar
         env:
