@@ -1,8 +1,8 @@
-<img src="./assets/logo.jpg" alt="Feather" width="200" align="right">
+<img src="./assets/logo.webp" alt="Feather" width="200" align="right">
 
 [![Discord](https://discord.com/api/guilds/827863713855176755/widget.png)](https://discord.gg/p9gzFE2bc6)
 [![Download](https://img.shields.io/badge/Download-Releases-darkgreen.svg)](https://git.rainnny.club/Rainnny/Feather/releases)
-[![Docs - Javadocs](https://img.shields.io/badge/Wiki-Javadocs-purple.svg)](https://maven.rainnny.club/javadoc/public/me/braydon/Feather/1.0-dev)
+[![Docs - Javadocs](https://img.shields.io/badge/Wiki-Javadocs-purple.svg)](https://maven.rainnny.club/javadoc/public/me/braydon/Feather/1.0.0)
 
 # Feather
 An all-in-one plugin library to help Java developers make Bungeecord & Spigot plugins.
@@ -10,7 +10,7 @@ An all-in-one plugin library to help Java developers make Bungeecord & Spigot pl
 ## Table of Contents
 - [Features](#features)
 - [Download](https://git.rainnny.club/Rainnny/Feather/releases)
-- [Documentation](https://maven.rainnny.club/javadoc/public/me/braydon/Feather/1.0-dev)
+- [Documentation](https://maven.rainnny.club/javadoc/public/me/braydon/Feather/1.0.0)
 - [Support](#support)
 - [Contributing](#contributing)
 - [Building from Source](#building-from-source)
