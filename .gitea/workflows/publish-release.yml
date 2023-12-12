@@ -58,7 +58,9 @@ jobs:
 
       # Publish to Maven
       - name: Publish to Maven
-        run: ./scripts/deploy.sh
+        run: |
+          chmod +x ./scripts/deploy.sh
+          ./scripts/deploy.sh
 
       # Generate changelog
       - name: Generate Changelog
