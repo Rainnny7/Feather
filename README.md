@@ -4,6 +4,9 @@
 [![Download](https://img.shields.io/badge/Download-Releases-darkgreen.svg)](https://git.rainnny.club/Rainnny/Feather/releases)
 [![Docs - Javadocs](https://img.shields.io/badge/Wiki-Javadocs-purple.svg)](https://maven.rainnny.club/javadoc/public/me/braydon/Feather/1.0.0)
 
+> [!CAUTION]
+> This repository is a work in progress and is not complete.
+
 # Feather
 An all-in-one plugin library to help Java developers make Bungeecord & Spigot plugins.
 
