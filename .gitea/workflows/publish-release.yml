@@ -1,0 +1,110 @@
+name: Publish Release
+
+on:
+  push:
+    branches: [master]
+    tags:
+      - *
+
+jobs:
+  publish:
+    name: Publish Release
+    strategy:
+      matrix:
+        arch: [ubuntu-latest]
+        java-version: [8]
+        maven-version: [3.9.4]
+    runs-on: ${{ matrix.arch }}
+
+    # Steps
+    steps:
+      # Checkout the repo
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Set up JDK
+      - name: Set up JDK
+        uses: https://github.com/actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: ${{ matrix.java-version }}
+          cache: maven
+          cache-dependency-path: pom.xml
+
+      # Setup Maven
+      - name: Set up Maven
+        uses: https://github.com/stCarolas/setup-maven@v4.5
+        with:
+          maven-version: ${{ matrix.maven-version }}
+
+      # Configure Maven settings
+      - name: Maven Settings
+        uses: https://github.com/s4u/maven-settings-action@v2.8.0
+        with:
+          servers: |-
+            [
+              {
+                "id": "rainnny-repo-public",
+                "username": "${{ secrets.PRIVATE_MAVEN_USER }}",
+                "password": "${{ secrets.PRIVATE_MAVEN_PASS }}"
+              }
+            ]
+
+      # Build the project
+      - name: Maven Build
+        run: mvn clean package -e -C6
+
+      # Publish to Maven
+      - name: Publish to Maven
+        run: ./scripts/deploy.sh
+
+      # Generate changelog
+      - name: Generate Changelog
+        id: changelog
+        uses: https://github.com/mathiasvr/command-output@v2.0.0
+        with:
+          run: |
+            npx conventional-changelog-cli -p angular -i CHANGELOG.md -s --skip-unstable
+            sed -i 's/commits/commit/g' CHANGELOG.md
+            cat CHANGELOG.md
+
+      # Extract the project version
+      # so we can use it later
+      - name: Extract Maven project version
+        shell: bash -l {0}
+        run: |
+          RELEASE_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+          echo "Project version: $RELEASE_VERSION"
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+
+      # Publish a new release to Gitea
+      - name: Publish Release
+        id: publish-release
+        uses: https://git.rainnny.club/Rainnny/release-action@main
+        with:
+          api_key: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+          tag: Feather-${{ env.RELEASE_VERSION }}
+          title: v${{ env.RELEASE_VERSION }}
+          body: |-
+            ${{ steps.changelog.outputs.stdout }}
+            
+            # Installation
+            ## Maven
+            ```xml
+            <dependency>
+              <groupId>me.braydon</groupId>
+              <artifactId>Feather</artifactId>
+              <version>${{ env.RELEASE_VERSION }}</version>
+            </dependency>
+            ```
+            
+            ## Gradle (Kotlin DSL)
+            ```kotlin
+            implementation("me.braydon:Feather-API:${{ env.RELEASE_VERSION }}")
+            ```
+          files: target/Feather-*.jar
+        env:
+          GOPATH: /usr/local/go
+          PATH: /usr/local/go/bin:${{ env.PATH }}
