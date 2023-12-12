@@ -163,8 +163,8 @@
     <!-- Distribution Repos -->
     <distributionManagement>
         <repository>
-            <id>rainnny-repo-private</id>
-            <url>https://maven.rainnny.club/private</url>
+            <id>rainnny-repo-public</id>
+            <url>https://maven.rainnny.club/public</url>
         </repository>
     </distributionManagement>
 

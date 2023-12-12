@@ -46,7 +46,7 @@ jobs:
           servers: |-
             [
               {
-                "id": "rainnny-repo-public",
+                "id": "rainnny-repo-private",
                 "username": "${{ secrets.PRIVATE_MAVEN_USER }}",
                 "password": "${{ secrets.PRIVATE_MAVEN_PASS }}"
               }
