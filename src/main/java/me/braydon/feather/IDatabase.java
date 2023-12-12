@@ -9,11 +9,11 @@ import java.io.Closeable;
  *
  * @author Braydon
  * @param <B> the bootstrap class of this database
- * @param <A> the type of credentials this database uses
- * @param <P> the type of pipeline for this database
- * @param <AP> the type of async pipeline for this database
+ * @param <C> the type of credentials this database uses
+ * @param <S> the type of pipeline for this database
+ * @param <A> the type of async pipeline for this database
  */
-public interface IDatabase<B, A, P, AP> extends Closeable {
+public interface IDatabase<B, C, S, A> extends Closeable {
     /**
      * Get the name of this database.
      *
@@ -26,7 +26,7 @@ public interface IDatabase<B, A, P, AP> extends Closeable {
      *
      * @param credentials the optional credentials to use
      */
-    void connect(A credentials);
+    void connect(C credentials);
     
     /**
      * Check if this database is connected.
@@ -49,16 +49,16 @@ public interface IDatabase<B, A, P, AP> extends Closeable {
      * pipeline for this database.
      *
      * @return the synchronized pipeline
-     * @see P for synchronized pipeline
+     * @see S for synchronized pipeline
      */
-    @NonNull P sync();
+    @NonNull S sync();
     
     /**
      * Get the asynchronous
      * pipeline for this database.
      *
      * @return the asynchronous pipeline
-     * @see AP for asynchronous pipeline
+     * @see A for asynchronous pipeline
      */
-    @NonNull AP async();
+    @NonNull A async();
 }
