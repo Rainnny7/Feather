@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class FeatherThreads {
     private static final AtomicInteger ID = new AtomicInteger(0); // The thread id
-    public static final ExecutorService THREAD_POOL = Executors.newFixedThreadPool(4, new ThreadFactoryBuilder()
+    public static final ExecutorService THREAD_POOL = Executors.newFixedThreadPool(FeatherSettings.getThreadCount(), new ThreadFactoryBuilder()
                                                                                            .setNameFormat("Feather Thread #" + (ID.incrementAndGet()))
                                                                                            .build()); // The thread pool to execute on
 }
