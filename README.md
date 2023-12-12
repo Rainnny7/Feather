@@ -18,6 +18,9 @@ An all-in-one plugin library to help Java developers make Bungeecord & Spigot pl
 ## Features
 - N/A
 
+## Stars
+[![Star History Chart](https://api.star-history.com/svg?repos=Rainnny7/Feather&type=Timeline)](https://star-history.com/#Rainnny7/Feather&Timeline)
+
 ## Support
 Looking for support? Join the [**Discord**](https://discord.gg/p9gzFE2bc6) or contact **rainnny7** on Discord.
 
