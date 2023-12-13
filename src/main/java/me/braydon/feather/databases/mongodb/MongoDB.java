@@ -3,10 +3,16 @@ package me.braydon.feather.databases.mongodb;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOptions;
 import lombok.Getter;
 import lombok.NonNull;
 import me.braydon.feather.IDatabase;
+import me.braydon.feather.annotation.Collection;
+import me.braydon.feather.annotation.Field;
+import me.braydon.feather.data.Document;
 
 /**
  * The {@link IDatabase} implementation for MongoDB.
@@ -16,7 +22,7 @@ import me.braydon.feather.IDatabase;
  * @see ConnectionString for the credentials class
  * @see MongoSyncPipeline for the sync pipeline class
  * @see MongoAsyncPipeline for the async pipeline class
- * @see <a href="https://www.mongodb.com/">MongoDB Official Site</a>
+ * @see <a href="https://www.mongodb.com">MongoDB Official Site</a>
  */
 public class MongoDB implements IDatabase<MongoClient, ConnectionString, MongoSyncPipeline, MongoAsyncPipeline> {
     /**
@@ -107,6 +113,38 @@ public class MongoDB implements IDatabase<MongoClient, ConnectionString, MongoSy
     @Override @NonNull
     public MongoAsyncPipeline async() {
         return new MongoAsyncPipeline(this);
+    }
+    
+    /**
+     * Write the given object to the database.
+     * <p>
+     * This object is an instance of a class
+     * annotated with {@link Collection}, and
+     * contains fields annotated with {@link Field}.
+     * </p>
+     *
+     * @param element the element to write
+     */
+    @Override
+    public void write(@NonNull Object element) {
+        Class<?> clazz = element.getClass(); // Get the element class
+        if (!clazz.isAnnotationPresent(Collection.class)) { // Missing annotation
+            throw new IllegalStateException("Element is missing @Collection annotation");
+        }
+        Collection annotation = clazz.getAnnotation(Collection.class); // Get the @Collection annotation
+        String collectionName = annotation.name(); // The name of the collection
+        if (collectionName.isEmpty()) { // Missing collection name
+            throw new IllegalStateException("Missing collection name in @Collection for " + clazz.getSimpleName());
+        }
+        MongoCollection<org.bson.Document> collection = database.getCollection(collectionName); // Get the collection
+        Document<Object> document = new Document<>(element, true); // Construct the document from the element
+        
+        // Set the map in the database
+        collection.updateOne(
+            Filters.eq(document.getIdKey(), document.getKey()),
+            new org.bson.Document("$set", new org.bson.Document(document.getMappedData())),
+            new UpdateOptions().upsert(true)
+        );
     }
     
     /**

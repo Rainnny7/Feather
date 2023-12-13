@@ -1,6 +1,8 @@
 package me.braydon.feather;
 
 import lombok.NonNull;
+import me.braydon.feather.annotation.Collection;
+import me.braydon.feather.annotation.Field;
 
 import java.io.Closeable;
 
@@ -61,4 +63,16 @@ public interface IDatabase<B, C, S, A> extends Closeable {
      * @see A for asynchronous pipeline
      */
     @NonNull A async();
+    
+    /**
+     * Write the given object to the database.
+     * <p>
+     * This object is an instance of a class
+     * annotated with {@link Collection}, and
+     * contains fields annotated with {@link Field}.
+     * </p>
+     *
+     * @param element the element to write
+     */
+    void write(@NonNull Object element);
 }

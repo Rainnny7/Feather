@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 /**
- * The pipeline for handling {@link MongoDB} operations.
+ * The pipeline for handling synchronous {@link MongoDB} operations.
  *
  * @author Braydon
  */
@@ -14,6 +14,8 @@ import lombok.NonNull;
 public final class MongoSyncPipeline {
     /**
      * The database to handle operations for.
+     *
+     * @see MongoDB for database
      */
     @NonNull private final MongoDB database;
     
