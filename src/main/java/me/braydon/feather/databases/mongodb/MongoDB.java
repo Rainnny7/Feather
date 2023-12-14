@@ -6,13 +6,18 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.UpdateOptions;
 import lombok.Getter;
 import lombok.NonNull;
 import me.braydon.feather.IDatabase;
 import me.braydon.feather.annotation.Collection;
 import me.braydon.feather.annotation.Field;
+import me.braydon.feather.common.Tuple;
 import me.braydon.feather.data.Document;
+import me.braydon.feather.databases.mongodb.annotation.Index;
+
+import java.util.Map;
 
 /**
  * The {@link IDatabase} implementation for MongoDB.
@@ -137,14 +142,22 @@ public class MongoDB implements IDatabase<MongoClient, ConnectionString, MongoSy
             throw new IllegalStateException("Missing collection name in @Collection for " + clazz.getSimpleName());
         }
         MongoCollection<org.bson.Document> collection = database.getCollection(collectionName); // Get the collection
-        Document<Object> document = new Document<>(element, true); // Construct the document from the element
+        Document<Object> document = new Document<>(element); // Construct the document from the element
         
         // Set the map in the database
         collection.updateOne(
             Filters.eq(document.getIdKey(), document.getKey()),
-            new org.bson.Document("$set", new org.bson.Document(document.getMappedData())),
+            new org.bson.Document("$set", new org.bson.Document(document.toMappedData())),
             new UpdateOptions().upsert(true)
         );
+        
+        // Create indexes for @Index fields
+        for (Map.Entry<String, Tuple<java.lang.reflect.Field, Object>> entry : document.getMappedData().entrySet()) {
+            java.lang.reflect.Field field = entry.getValue().getLeft();
+            if (field.isAnnotationPresent(Index.class)) {
+                collection.createIndex(Indexes.text(entry.getKey()));
+            }
+        }
     }
     
     /**

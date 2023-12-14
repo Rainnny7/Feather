@@ -126,8 +126,8 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
         if (!element.getClass().isAnnotationPresent(Collection.class)) { // Missing annotation
             throw new IllegalStateException("Element is missing @Collection annotation");
         }
-        Document<String> document = new Document<>(element, false); // Construct the document from the element
-        sync().hmset(String.valueOf(document.getKey()), document.getMappedData()); // Set the map in the database
+        Document<String> document = new Document<>(element); // Construct the document from the element
+        sync().hmset(String.valueOf(document.getKey()), document.toMappedData()); // Set the map in the database
     }
     
     /**

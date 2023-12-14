@@ -8,11 +8,10 @@ import me.braydon.feather.IDatabase;
 import me.braydon.feather.annotation.Collection;
 import me.braydon.feather.annotation.Field;
 import me.braydon.feather.annotation.Id;
+import me.braydon.feather.annotation.Serializable;
+import me.braydon.feather.common.Tuple;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A document is a key-value pair that is stored
@@ -38,12 +37,18 @@ public class Document<V> {
     
     /**
      * The mapped data of this document.
+     * <p>
+     * The key of this key-value pair is the identifier
+     * for the field within this document. The value is
+     * a tuple that contains the Java field, as well as
+     * the field value.
+     * </p>
      *
      * @see V for value type
      */
-    private final Map<String, V> mappedData = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Map<String, Tuple<java.lang.reflect.Field, V>> mappedData = Collections.synchronizedMap(new LinkedHashMap<>());
     
-    public Document(@NonNull Object element, boolean rawObject) {
+    public Document(@NonNull Object element) {
         Class<?> clazz = element.getClass(); // Get the element class
         String idKey = null; // The key for the id field
         for (java.lang.reflect.Field field : clazz.getDeclaredFields()) {
@@ -64,20 +69,15 @@ public class Document<V> {
             }
             Class<?> fieldType = field.getType(); // The type of the field
             try {
-                Object value; // The value of the field
+                Object value = field.get(element); // The value of the field
                 
-                if (fieldType == UUID.class) { // Convert UUIDs into strings
-                    value = ((UUID) field.get(element)).toString();
-                } else if (rawObject) { // Use the raw object from the field
-                    value = field.get(element);
-                } else { // Otherwise, turn the value into a string
-                    if (fieldType == String.class) { // Already a string, cast it
-                        value = field.get(element);
-                    } else { // Convert the field into json using Gson
-                        value = FeatherSettings.getGson().toJson(field.get(element));
-                    }
+                if (field.isAnnotationPresent(Serializable.class)) { // Serialize the field if @Serializable is present
+                    value = FeatherSettings.getGson().toJson(field.get(element));
+                } else if (fieldType == UUID.class) { // Convert UUIDs into strings
+                    value = ((UUID) value).toString();
                 }
-                mappedData.put(key, (V) value); // Store in our map
+                
+                mappedData.put(key, new Tuple<>(field, (V) value)); // Store in our map
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
@@ -85,10 +85,25 @@ public class Document<V> {
         assert idKey != null; // We need an id key
         this.idKey = idKey; // We have our id key
         
-        V key = mappedData.get(idKey); // Get the id from the data map
+        Tuple<java.lang.reflect.Field, V> key = mappedData.get(idKey); // Get the id from the data map
         if (key == null) { // The element is missing an id field
             throw new IllegalArgumentException("No @Id annotated field found in " + clazz.getSimpleName());
         }
-        this.key = key;
+        this.key = key.getRight();
+    }
+    
+    /**
+     * Turn this document into a map.
+     *
+     * @return the mapped data
+     * @see #mappedData for stored data
+     */
+    @NonNull
+    public Map<String, V> toMappedData() {
+        Map<String, V> mappedData = new LinkedHashMap<>(); // The mapped data
+        for (Map.Entry<String, Tuple<java.lang.reflect.Field, V>> entry : this.mappedData.entrySet()) {
+            mappedData.put(entry.getKey(), entry.getValue().getRight());
+        }
+        return mappedData;
     }
 }
