@@ -5,8 +5,8 @@
 [![Docs - Gitea](https://img.shields.io/badge/Wiki-Gitea-darkgreen.svg)](https://git.rainnny.club/Rainnny/Feather/wiki)
 [![Docs - Javadocs](https://img.shields.io/badge/Wiki-Javadocs-purple.svg)](https://maven.rainnny.club/javadoc/public/me/braydon/Feather/1.0.0)
 
-> [!CAUTION]
-> This repository is a work in progress and is not complete.
+> [!IMPORTANT]
+> This repository is a work-in-progress, if you have an issue, please create one <a href="https://git.rainnny.club/Rainnny/Feather/issues/new">here</a>
 
 # Feather
 An all-in-one plugin library to help Java developers make Bungeecord & Spigot plugins.
