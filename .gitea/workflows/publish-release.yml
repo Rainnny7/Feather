@@ -58,9 +58,7 @@ jobs:
 
       # Publish to Maven
       - name: Publish to Maven
-        run: |
-          chmod +x ./scripts/deploy.sh
-          ./scripts/deploy.sh
+        run: mvn deploy -Pgen-javadocs -B -Dstyle.color=always --update-snapshots -T6C -e
 
       # Generate changelog
       - name: Generate Changelog
