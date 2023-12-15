@@ -8,7 +8,7 @@ package me.braydon.feather.database.impl.redis;
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.NonNull;
 import me.braydon.feather.data.Document;
-import me.braydon.feather.repository.Repository;
+import me.braydon.feather.database.Repository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,7 +98,7 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
     }
     
     /**
-     * Drop the entity with the given id
+     * Drop the entity with the given id.
      *
      * @param id the entity id to drop
      * @see ID for id

@@ -13,8 +13,8 @@ import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.UpdateOptions;
 import lombok.NonNull;
 import me.braydon.feather.common.Tuple;
+import me.braydon.feather.database.Repository;
 import me.braydon.feather.database.impl.mongodb.annotation.Index;
-import me.braydon.feather.repository.Repository;
 import org.bson.Document;
 
 import java.lang.reflect.Field;
@@ -131,7 +131,7 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
     }
     
     /**
-     * Drop the entity with the given id
+     * Drop the entity with the given id.
      *
      * @param id the entity id to drop
      * @see ID for id
@@ -143,7 +143,7 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
     }
     
     /**
-     * Drop the entity with the given id
+     * Drop the entity with the given id.
      *
      * @param idKey the key of the id
      * @param id the entity id to drop

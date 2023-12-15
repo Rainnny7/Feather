@@ -3,7 +3,7 @@
  *
  * For inquiries, please contact braydonrainnny@gmail.com
  */
-package me.braydon.feather.repository;
+package me.braydon.feather.database;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,6 @@ import lombok.NonNull;
 import me.braydon.feather.FeatherSettings;
 import me.braydon.feather.annotation.Serializable;
 import me.braydon.feather.common.FieldUtils;
-import me.braydon.feather.database.IDatabase;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -90,7 +89,7 @@ public abstract class Repository<D extends IDatabase<?, ?>, ID, E> {
     public abstract long count();
     
     /**
-     * Drop the entity with the given id
+     * Drop the entity with the given id.
      *
      * @param id the entity id to drop
      * @see ID for id
