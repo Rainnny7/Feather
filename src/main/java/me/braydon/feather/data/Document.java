@@ -16,7 +16,6 @@ import me.braydon.feather.common.FieldUtils;
 import me.braydon.feather.common.Tuple;
 import me.braydon.feather.database.IDatabase;
 
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,7 +30,7 @@ import java.util.UUID;
  * @author Braydon
  * @param <V> the type of value this document holds
  */
-@ThreadSafe @Getter @ToString
+@Getter @ToString
 public class Document<V> {
     /**
      * The key to use for the id field.
