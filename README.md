@@ -14,7 +14,8 @@ An all-in-one plugin library to help Java developers make Bungeecord & Spigot pl
 ## Table of Contents
 - [Features](#features)
 - [Download](https://git.rainnny.club/Rainnny/Feather/releases)
-- [Documentation](https://maven.rainnny.club/javadoc/public/me/braydon/Feather/1.0.0)
+- [Wiki](https://git.rainnny.club/Rainnny/Feather/wiki)
+- [Javadocs](https://maven.rainnny.club/javadoc/public/me/braydon/Feather/1.0.0)
 - [Support](#support)
 - [Contributing](#contributing)
 - [Building from Source](#building-from-source)
