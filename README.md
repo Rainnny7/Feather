@@ -1,7 +1,8 @@
 <img src="./assets/logo.webp" alt="Feather" width="200" align="right">
 
 [![Discord](https://discord.com/api/guilds/827863713855176755/widget.png)](https://discord.gg/p9gzFE2bc6)
-[![Download](https://img.shields.io/badge/Download-Releases-darkgreen.svg)](https://git.rainnny.club/Rainnny/Feather/releases)
+[![Download](https://img.shields.io/badge/Download-Releases-red.svg)](https://git.rainnny.club/Rainnny/Feather/releases)
+[![Docs - Gitea](https://img.shields.io/badge/Wiki-Gitea-darkgreen.svg)](https://git.rainnny.club/Rainnny/Feather/wiki)
 [![Docs - Javadocs](https://img.shields.io/badge/Wiki-Javadocs-purple.svg)](https://maven.rainnny.club/javadoc/public/me/braydon/Feather/1.0.0)
 
 > [!CAUTION]
