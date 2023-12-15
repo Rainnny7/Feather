@@ -29,7 +29,10 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
     
     public RedisRepository(@NonNull Redis database, @NonNull Class<? extends E> entityClass, @NonNull String keyPrefix) {
         super(database, entityClass);
-        this.keyPrefix = keyPrefix;
+        this.keyPrefix = keyPrefix.trim();
+        if (this.keyPrefix.isEmpty()) { // Missing a key prefix
+            throw new IllegalArgumentException("Missing key prefix");
+        }
     }
     
     /**
