@@ -1,15 +1,10 @@
-package me.braydon.feather.databases.redis;
+package me.braydon.feather.database.impl.redis;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.async.RedisAsyncCommands;
-import io.lettuce.core.api.sync.RedisCommands;
 import lombok.NonNull;
-import me.braydon.feather.IDatabase;
-import me.braydon.feather.annotation.Collection;
-import me.braydon.feather.annotation.Field;
-import me.braydon.feather.data.Document;
+import me.braydon.feather.database.IDatabase;
 
 /**
  * The {@link IDatabase} implementation for Redis.
@@ -17,11 +12,10 @@ import me.braydon.feather.data.Document;
  * @author Braydon
  * @see StatefulRedisConnection for the bootstrap class
  * @see RedisURI for the credentials class
- * @see RedisCommands for the sync pipeline class
- * @see RedisAsyncCommands for the async pipeline class
+ * @see RedisRepository for the repository class
  * @see <a href="https://redis.io">Redis Official Site</a>
  */
-public class Redis implements IDatabase<StatefulRedisConnection<String, String>, RedisURI, RedisCommands<String, String>, RedisAsyncCommands<String, String>> {
+public class Redis implements IDatabase<StatefulRedisConnection<String, String>, RedisURI, RedisRepository<?, ?>> {
     /**
      * The current {@link RedisClient} instance.
      */
@@ -76,6 +70,16 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
     }
     
     /**
+     * Get the latency to this database.
+     *
+     * @return the latency, -1 if not connected
+     */
+    @Override
+    public long getLatency() {
+        return 0;
+    }
+    
+    /**
      * Get the bootstrap class
      * instance for this database.
      *
@@ -88,47 +92,25 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
     }
     
     /**
-     * Get the synchronized
-     * pipeline for this database.
+     * Create a new repository
+     * using this database.
      *
-     * @return the synchronized pipeline
-     * @see RedisPipeline for synchronized pipeline
+     * @return the repository instance
+     * @see RedisRepository for repository
      */
     @Override @NonNull
-    public RedisCommands<String, String> sync() {
-        return connection.sync();
+    public <ID, E> RedisRepository<ID, E> newRepository() {
+        return new RedisRepository<>(this);
     }
     
-    /**
-     * Get the asynchronous
-     * pipeline for this database.
-     *
-     * @return the asynchronous pipeline
-     * @see RedisPipeline for asynchronous pipeline
-     */
-    @Override @NonNull
-    public RedisAsyncCommands<String, String> async() {
-        return connection.async();
-    }
-    
-    /**
-     * Write the given object to the database.
-     * <p>
-     * This object is an instance of a class
-     * annotated with {@link Collection}, and
-     * contains fields annotated with {@link Field}.
-     * </p>
-     *
-     * @param element the element to write
-     */
-    @Override
-    public void write(@NonNull Object element) {
-        if (!element.getClass().isAnnotationPresent(Collection.class)) { // Missing annotation
-            throw new IllegalStateException("Element is missing @Collection annotation");
-        }
-        Document<String> document = new Document<>(element); // Construct the document from the element
-        sync().hmset(String.valueOf(document.getKey()), document.toMappedData()); // Set the map in the database
-    }
+//    @Override
+//    public void write(@NonNull Object element) {
+//        if (!element.getClass().isAnnotationPresent(Collection.class)) { // Missing annotation
+//            throw new IllegalStateException("Element is missing @Collection annotation");
+//        }
+//        Document<String> document = new Document<>(element); // Construct the document from the element
+//        sync().hmset(String.valueOf(document.getKey()), document.toMappedData()); // Set the map in the database
+//    }
     
     /**
      * Closes this stream and releases any system resources associated

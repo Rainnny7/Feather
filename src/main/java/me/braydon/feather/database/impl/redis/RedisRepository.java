@@ -1,30 +1,22 @@
-package me.braydon.feather.repository;
+package me.braydon.feather.database.impl.redis;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NonNull;
-import me.braydon.feather.database.IDatabase;
+import me.braydon.feather.repository.Repository;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * A repository belonging to a {@link IDatabase}.
+ * The {@link Redis} {@link Repository} implementation.
  *
  * @author Braydon
- * @param <D> the database this repository uses
  * @param <ID> the identifier for type for entities
  * @param <E> the entity type this repository stores
  */
-@AllArgsConstructor @Getter(AccessLevel.PROTECTED)
-public abstract class Repository<D extends IDatabase<?, ?, ?>, ID, E> {
-    /**
-     * The database this repository belongs to.
-     *
-     * @see D for database
-     */
-    @NonNull private final D database;
+public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
+    public RedisRepository(@NonNull Redis database) {
+        super(database);
+    }
     
     /**
      * Get the entity with the given id.
@@ -34,7 +26,10 @@ public abstract class Repository<D extends IDatabase<?, ?, ?>, ID, E> {
      * @see ID for id
      * @see E for entity
      */
-    public abstract E find(@NonNull ID id);
+    @Override
+    public E find(@NonNull ID id) {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Find the entity matching the given predicate.
@@ -44,7 +39,10 @@ public abstract class Repository<D extends IDatabase<?, ?, ?>, ID, E> {
      * @see E for entity
      * @see Predicate for predicate
      */
-    public abstract E findOne(@NonNull Predicate<E> predicate);
+    @Override
+    public E findOne(@NonNull Predicate<E> predicate) {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Find all entities matching the given predicate.
@@ -54,7 +52,10 @@ public abstract class Repository<D extends IDatabase<?, ?, ?>, ID, E> {
      * @see E for entity
      * @see Predicate for predicate
      */
-    public abstract List<E> findAll(@NonNull Predicate<E> predicate);
+    @Override
+    public List<E> findAll(@NonNull Predicate<E> predicate) {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Get all entities within this repository.
@@ -62,16 +63,9 @@ public abstract class Repository<D extends IDatabase<?, ?, ?>, ID, E> {
      * @return the entities
      * @see E for entity
      */
-    public abstract List<E> findAll();
-    
-    /**
-     * Save the given entity to the database.
-     *
-     * @param entity the entity to save
-     * @see E for entity
-     */
-    public void save(@NonNull E entity) {
-        saveAll(entity);
+    @Override
+    public List<E> findAll() {
+        throw new UnsupportedOperationException();
     }
     
     /**
@@ -80,7 +74,10 @@ public abstract class Repository<D extends IDatabase<?, ?, ?>, ID, E> {
      * @param entities the entities to save
      * @see E for entity
      */
-    public abstract void saveAll(@NonNull E... entities);
+    @Override
+    public void saveAll(@NonNull E... entities) {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Get the amount of stored entities.
@@ -88,7 +85,10 @@ public abstract class Repository<D extends IDatabase<?, ?, ?>, ID, E> {
      * @return the amount of stored entities
      * @see E for entity
      */
-    public abstract long count();
+    @Override
+    public long count() {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Drop the given entity.
@@ -96,5 +96,8 @@ public abstract class Repository<D extends IDatabase<?, ?, ?>, ID, E> {
      * @param entity the entity to drop
      * @see E for entity
      */
-    public abstract void drop(@NonNull E entity);
+    @Override
+    public void drop(@NonNull E entity) {
+        throw new UnsupportedOperationException();
+    }
 }

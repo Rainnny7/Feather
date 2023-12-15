@@ -1,10 +1,13 @@
 package me.braydon.feather.annotation;
 
+import me.braydon.feather.data.Document;
+
 import java.lang.annotation.*;
 
 /**
  * Classes tagged with this annotation
- * will be treated as a collection.
+ * will be treated as a collection that
+ * holds {@link Document}'s.
  *
  * @author Braydon
  */

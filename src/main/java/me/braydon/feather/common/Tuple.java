@@ -10,6 +10,8 @@ import lombok.Setter;
  * holds a pair of two values.
  *
  * @author Braydon
+ * @param <L> the left value
+ * @param <R> the right value
  */
 @NoArgsConstructor @AllArgsConstructor @Setter @Getter
 public class Tuple<L, R> {

@@ -3,9 +3,9 @@ package me.braydon.feather.annotation;
 import java.lang.annotation.*;
 
 /**
- * Fields tagged with this annotation will be treated
- * as the primary identifying key for documents within
- * a {@link Collection}.
+ * {@link Field}'s tagged with this annotation will be
+ * treated as the primary identifying key for documents
+ * within a {@link Collection}.
  *
  * @author Braydon
  */

@@ -38,15 +38,6 @@
         <!-- See: https://checkstyle.org/checks/imports/avoidstaticimport.html#AvoidStaticImport -->
         <module name="AvoidStaticImport" />
 
-        <!-- See: https://checkstyle.org/checks/naming/classtypeparametername.html#ClassTypeParameterName -->
-        <module name="ClassTypeParameterName" />
-
-        <!-- See: https://checkstyle.org/checks/naming/interfacetypeparametername.html#InterfaceTypeParameterName -->
-        <module name="InterfaceTypeParameterName" />
-
-        <!-- See: https://checkstyle.org/checks/naming/methodtypeparametername.html#MethodTypeParameterName -->
-        <module name="MethodTypeParameterName" />
-
         <!-- See: https://checkstyle.org/checks/coding/defaultcomeslast.html#DefaultComesLast -->
         <module name="DefaultComesLast" />
 

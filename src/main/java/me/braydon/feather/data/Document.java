@@ -4,14 +4,18 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 import me.braydon.feather.FeatherSettings;
-import me.braydon.feather.IDatabase;
 import me.braydon.feather.annotation.Collection;
 import me.braydon.feather.annotation.Field;
 import me.braydon.feather.annotation.Id;
 import me.braydon.feather.annotation.Serializable;
 import me.braydon.feather.common.Tuple;
+import me.braydon.feather.database.IDatabase;
 
-import java.util.*;
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * A document is a key-value pair that is stored
@@ -23,7 +27,7 @@ import java.util.*;
  * @author Braydon
  * @param <V> the type of value this document holds
  */
-@Getter @ToString
+@ThreadSafe @Getter @ToString
 public class Document<V> {
     /**
      * The key to use for the id field.
@@ -74,7 +78,7 @@ public class Document<V> {
                 if (field.isAnnotationPresent(Serializable.class)) { // Serialize the field if @Serializable is present
                     value = FeatherSettings.getGson().toJson(field.get(element));
                 } else if (fieldType == UUID.class) { // Convert UUIDs into strings
-                    value = ((UUID) value).toString();
+                    value = value.toString();
                 }
                 
                 mappedData.put(key, new Tuple<>(field, (V) value)); // Store in our map

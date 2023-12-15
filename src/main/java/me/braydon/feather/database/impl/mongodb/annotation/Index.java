@@ -1,6 +1,6 @@
-package me.braydon.feather.databases.mongodb.annotation;
+package me.braydon.feather.database.impl.mongodb.annotation;
 
-import me.braydon.feather.databases.mongodb.MongoDB;
+import me.braydon.feather.database.impl.mongodb.MongoDB;
 
 import java.lang.annotation.*;
 
