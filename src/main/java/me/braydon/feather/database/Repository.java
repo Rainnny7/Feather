@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * A repository belonging to a {@link IDatabase}.
+ * A repository belonging to an {@link IDatabase}.
  *
  * @author Braydon
  * @param <D> the database this repository uses
