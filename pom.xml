@@ -7,7 +7,7 @@
     <!--Project Details-->
     <groupId>me.braydon</groupId>
     <artifactId>Feather</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-dev</version>
 
     <properties>
         <java.version>8</java.version>
@@ -18,7 +18,7 @@
 
     <build>
         <plugins>
-            <!--Used for compiling the source code with the proper Java version-->
+            <!-- Used for compiling the source code with the proper Java version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -27,13 +27,13 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
 
-                    <!--Enable incremental builds, this is reversed due to-->
-                    <!--a bug as seen in https://issues.apache.org/jira/browse/MCOMPILER-209-->
+                    <!-- Enable incremental builds, this is reversed due to -->
+                    <!-- a bug as seen in https://issues.apache.org/jira/browse/MCOMPILER-209 -->
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
 
-            <!--Handles shading of dependencies in the final output jar-->
+            <!-- Handles shading of dependencies in the final output jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -70,7 +70,7 @@
                 </executions>
             </plugin>
 
-            <!--Used for generating a git properties file during build-->
+            <!-- Used for generating a git properties file during build -->
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
