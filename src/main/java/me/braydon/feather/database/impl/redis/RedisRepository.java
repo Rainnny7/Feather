@@ -5,9 +5,13 @@
  */
 package me.braydon.feather.database.impl.redis;
 
+import io.lettuce.core.api.sync.RedisCommands;
 import lombok.NonNull;
+import me.braydon.feather.data.Document;
 import me.braydon.feather.repository.Repository;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,8 +22,14 @@ import java.util.List;
  * @param <E> the entity type this repository stores
  */
 public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
-    public RedisRepository(@NonNull Redis database, @NonNull Class<? extends E> entityClass) {
+    /**
+     * The prefix to use for keys in this repository.
+     */
+    @NonNull private final String keyPrefix;
+    
+    public RedisRepository(@NonNull Redis database, @NonNull Class<? extends E> entityClass, @NonNull String keyPrefix) {
         super(database, entityClass);
+        this.keyPrefix = keyPrefix;
     }
     
     /**
@@ -32,7 +42,7 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
      */
     @Override
     public E find(@NonNull ID id) {
-        throw new UnsupportedOperationException();
+        return newEntity(getDatabase().getBootstrap().sync().hgetall(keyPrefix + ":" + id));
     }
     
     /**
@@ -43,7 +53,12 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
      */
     @Override
     public List<E> findAll() {
-        throw new UnsupportedOperationException();
+        RedisCommands<String, String> commands = getDatabase().getBootstrap().sync(); // The sync command executor
+        List<E> entities = new ArrayList<>(); // The entities to return
+        for (String key : commands.keys(keyPrefix + ":*")) {
+            entities.add(newEntity(commands.hgetall(key)));
+        }
+        return Collections.unmodifiableList(entities);
     }
     
     /**
@@ -54,7 +69,18 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
      */
     @Override
     public void saveAll(@NonNull E... entities) {
-        throw new UnsupportedOperationException();
+        boolean multi = entities.length > 1; // Should we run multiple commands?
+        RedisCommands<String, String> commands = getDatabase().getBootstrap().sync(); // The sync command executor
+        if (multi) { // Prepare for setting the entities
+            commands.multi();
+        }
+        for (E entity : entities) { // Set our entities
+            Document<String> document = new Document<>(entity); // Create a document from the entity
+            commands.hmset(keyPrefix + ":" + document.getKey(), document.toMappedData());
+        }
+        if (multi) { // Execute the commands in bulk
+            commands.exec();
+        }
     }
     
     /**
@@ -65,7 +91,19 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
      */
     @Override
     public long count() {
-        throw new UnsupportedOperationException();
+        return findAll().size();
+    }
+    
+    /**
+     * Drop the entity with the given id
+     *
+     * @param id the entity id to drop
+     * @see ID for id
+     * @see E for entity
+     */
+    @Override
+    public void dropById(@NonNull ID id) {
+        getDatabase().getBootstrap().sync().del(keyPrefix + ":" + id);
     }
     
     /**
@@ -76,6 +114,7 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
      */
     @Override
     public void drop(@NonNull E entity) {
-        throw new UnsupportedOperationException();
+        me.braydon.feather.data.Document<Object> document = new me.braydon.feather.data.Document<>(entity); // Create a document from the entity
+        getDatabase().getBootstrap().sync().del(keyPrefix + ":" + document.getKey());
     }
 }

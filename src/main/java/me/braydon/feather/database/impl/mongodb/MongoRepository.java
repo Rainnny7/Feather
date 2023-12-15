@@ -75,7 +75,7 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
      */
     @Override
     public List<E> findAll() {
-        List<E> entities = new ArrayList<>();
+        List<E> entities = new ArrayList<>(); // The entities to return
         try (MongoCursor<Document> cursor = collection.find().cursor()) {
             while (cursor.hasNext()) { // Add the entity to the list
                 entities.add(newEntity(cursor.next()));
@@ -128,6 +128,30 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
     @Override
     public long count() {
         return collection.countDocuments();
+    }
+    
+    /**
+     * Drop the entity with the given id
+     *
+     * @param id the entity id to drop
+     * @see ID for id
+     * @see E for entity
+     */
+    @Override
+    public void dropById(@NonNull ID id) {
+        dropById("_id", id);
+    }
+    
+    /**
+     * Drop the entity with the given id
+     *
+     * @param idKey the key of the id
+     * @param id the entity id to drop
+     * @see ID for id
+     * @see E for entity
+     */
+    public void dropById(@NonNull String idKey, @NonNull ID id) {
+        collection.deleteOne(new Document(idKey, id.toString())); // Delete the entity
     }
     
     /**

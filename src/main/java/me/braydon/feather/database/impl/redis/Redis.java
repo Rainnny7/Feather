@@ -97,26 +97,39 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
         return connection;
     }
     
-//    /**
-//     * Create a new repository
-//     * using this database.
-//     *
-//     * @return the repository instance
-//     * @see RedisRepository for repository
-//     */
-//    @NonNull
-//    public <ID, E> RedisRepository<ID, E> newRepository() {
-//        return new RedisRepository<>(this);
-//    }
+    /**
+     * Create a new repository using this database.
+     *
+     * @param <ID> the identifier for type for entities
+     * @param <E> the entity type the repository stores
+     * @param entityClass the class of the entity the repository uses
+     * @return the repository instance
+     * @throws IllegalStateException if not connected
+     * @see RedisRepository for repository
+     */
+    @NonNull
+    public <ID, E> RedisRepository<ID, E> newRepository(@NonNull Class<? extends E> entityClass) {
+        return newRepository(entityClass, entityClass.getSimpleName());
+    }
     
-//    @Override
-//    public void write(@NonNull Object element) {
-//        if (!element.getClass().isAnnotationPresent(Collection.class)) { // Missing annotation
-//            throw new IllegalStateException("Element is missing @Collection annotation");
-//        }
-//        Document<String> document = new Document<>(element); // Construct the document from the element
-//        sync().hmset(String.valueOf(document.getKey()), document.toMappedData()); // Set the map in the database
-//    }
+    /**
+     * Create a new repository using this database.
+     *
+     * @param <ID> the identifier for type for entities
+     * @param <E> the entity type the repository stores
+     * @param entityClass the class of the entity the repository uses
+     * @param keyPrefix the key to prefix fields with
+     * @return the repository instance
+     * @throws IllegalStateException if not connected
+     * @see RedisRepository for repository
+     */
+    @NonNull
+    public <ID, E> RedisRepository<ID, E> newRepository(@NonNull Class<? extends E> entityClass, @NonNull String keyPrefix) {
+        if (!isConnected()) { // Not connected
+            throw new IllegalStateException("Not connected");
+        }
+        return new RedisRepository<>(this, entityClass, keyPrefix);
+    }
     
     /**
      * Closes this stream and releases any system resources associated

@@ -90,6 +90,15 @@ public abstract class Repository<D extends IDatabase<?, ?>, ID, E> {
     public abstract long count();
     
     /**
+     * Drop the entity with the given id
+     *
+     * @param id the entity id to drop
+     * @see ID for id
+     * @see E for entity
+     */
+    public abstract void dropById(@NonNull ID id);
+    
+    /**
      * Drop the given entity.
      *
      * @param entity the entity to drop
@@ -104,7 +113,7 @@ public abstract class Repository<D extends IDatabase<?, ?>, ID, E> {
      * @return the created entity, null if none
      * @see E for entity
      */
-    protected final E newEntity(Map<String, Object> mappedData) {
+    protected final E newEntity(Map<String, ?> mappedData) {
         if (mappedData == null) { // No mapped data given
             return null;
         }
@@ -121,7 +130,7 @@ public abstract class Repository<D extends IDatabase<?, ?>, ID, E> {
                 // Field is serializable and is a string, deserialize it using Gson
                 if (field.isAnnotationPresent(Serializable.class) && value.getClass() == String.class) {
                     value = FeatherSettings.getGson().fromJson((String) value, type);
-                } else if (type == UUID.class) { // Type is a UUID, convert it
+                } else if (type == UUID.class && value != null) { // Type is a UUID, convert it
                     value = UUID.fromString((String) value);
                 }
                 
