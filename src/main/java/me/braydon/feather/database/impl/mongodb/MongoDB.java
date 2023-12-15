@@ -49,6 +49,7 @@ public class MongoDB implements IDatabase<MongoClient, ConnectionString> {
      * @param credentials the optional credentials to use
      * @throws IllegalArgumentException if no credentials or database name is provided
      * @throws IllegalStateException if already connected
+     * @see ConnectionString for credentials
      */
     @Override
     public void connect(ConnectionString credentials) throws IllegalArgumentException, IllegalStateException {
@@ -91,8 +92,8 @@ public class MongoDB implements IDatabase<MongoClient, ConnectionString> {
         }
         // Return ping
         long before = System.currentTimeMillis();
-        database.runCommand(new BasicDBObject("ping", "1"));
-        return System.currentTimeMillis() - before;
+        database.runCommand(new BasicDBObject("ping", "1")); // Send a ping command
+        return System.currentTimeMillis() - before; // Return time difference
     }
     
     /**

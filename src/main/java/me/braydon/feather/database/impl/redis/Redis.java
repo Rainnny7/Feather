@@ -46,6 +46,7 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
      * @param credentials the optional credentials to use
      * @throws IllegalArgumentException if no credentials are provided
      * @throws IllegalStateException if already connected
+     * @see RedisURI for credentials
      */
     @Override
     public void connect(RedisURI credentials) throws IllegalArgumentException, IllegalStateException {
@@ -82,7 +83,13 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
      */
     @Override
     public long getLatency() {
-        return 0;
+        if (!isConnected()) { // Not connected
+            return -1L;
+        }
+        // Return ping
+        long before = System.currentTimeMillis();
+        connection.sync().ping(); // Send a ping command
+        return System.currentTimeMillis() - before; // Return time difference
     }
     
     /**

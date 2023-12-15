@@ -29,6 +29,7 @@ public interface IDatabase<B, C> extends Closeable {
      *
      * @param credentials the optional credentials to use
      * @throws IllegalStateException if already connected
+     * @see C for credentials
      */
     void connect(C credentials) throws IllegalStateException;
     
