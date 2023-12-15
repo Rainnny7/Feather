@@ -7,7 +7,7 @@
     <!--Project Details-->
     <groupId>me.braydon</groupId>
     <artifactId>Feather</artifactId>
-    <version>1.0-dev</version>
+    <version>1.0.0</version>
 
     <properties>
         <java.version>8</java.version>
