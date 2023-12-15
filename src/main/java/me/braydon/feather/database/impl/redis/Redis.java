@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2023 Braydon (Rainnny). All rights reserved.
+ *
+ * For inquiries, please contact braydonrainnny@gmail.com
+ */
 package me.braydon.feather.database.impl.redis;
 
 import io.lettuce.core.RedisClient;
@@ -12,10 +17,9 @@ import me.braydon.feather.database.IDatabase;
  * @author Braydon
  * @see StatefulRedisConnection for the bootstrap class
  * @see RedisURI for the credentials class
- * @see RedisRepository for the repository class
  * @see <a href="https://redis.io">Redis Official Site</a>
  */
-public class Redis implements IDatabase<StatefulRedisConnection<String, String>, RedisURI, RedisRepository<?, ?>> {
+public class Redis implements IDatabase<StatefulRedisConnection<String, String>, RedisURI> {
     /**
      * The current {@link RedisClient} instance.
      */
@@ -40,9 +44,11 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
      * Initialize a connection to this database.
      *
      * @param credentials the optional credentials to use
+     * @throws IllegalArgumentException if no credentials are provided
+     * @throws IllegalStateException if already connected
      */
     @Override
-    public void connect(RedisURI credentials) {
+    public void connect(RedisURI credentials) throws IllegalArgumentException, IllegalStateException {
         if (credentials == null) { // We need valid credentials
             throw new IllegalArgumentException("No credentials defined");
         }
@@ -91,17 +97,17 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
         return connection;
     }
     
-    /**
-     * Create a new repository
-     * using this database.
-     *
-     * @return the repository instance
-     * @see RedisRepository for repository
-     */
-    @Override @NonNull
-    public <ID, E> RedisRepository<ID, E> newRepository() {
-        return new RedisRepository<>(this);
-    }
+//    /**
+//     * Create a new repository
+//     * using this database.
+//     *
+//     * @return the repository instance
+//     * @see RedisRepository for repository
+//     */
+//    @NonNull
+//    public <ID, E> RedisRepository<ID, E> newRepository() {
+//        return new RedisRepository<>(this);
+//    }
     
 //    @Override
 //    public void write(@NonNull Object element) {

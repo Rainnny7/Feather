@@ -1,13 +1,17 @@
+/*
+ * Copyright (c) 2023 Braydon (Rainnny). All rights reserved.
+ *
+ * For inquiries, please contact braydonrainnny@gmail.com
+ */
 package me.braydon.feather.database.impl.mongodb;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.UpdateOptions;
 import lombok.NonNull;
-import me.braydon.feather.annotation.Collection;
-import me.braydon.feather.common.EntityUtils;
 import me.braydon.feather.common.Tuple;
 import me.braydon.feather.database.impl.mongodb.annotation.Index;
 import me.braydon.feather.repository.Repository;
@@ -15,10 +19,9 @@ import org.bson.Document;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 /**
  * The {@link MongoDB} {@link Repository} implementation.
@@ -28,8 +31,14 @@ import java.util.function.Predicate;
  * @param <E> the entity type this repository stores
  */
 public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
-    public MongoRepository(@NonNull MongoDB database) {
-        super(database);
+    /**
+     * The {@link MongoCollection} to use for this repository.
+     */
+    @NonNull private final MongoCollection<Document> collection;
+    
+    public MongoRepository(@NonNull MongoDB database, @NonNull Class<? extends E> entityClass, @NonNull MongoCollection<Document> collection) {
+        super(database, entityClass);
+        this.collection = collection;
     }
     
     /**
@@ -42,34 +51,20 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
      */
     @Override
     public E find(@NonNull ID id) {
-        String idString = id.toString(); // Stringify the ID
-        throw new UnsupportedOperationException();
+        return find("_id", id);
     }
     
     /**
-     * Find the entity matching the given predicate.
+     * Get the entity with the given id.
      *
-     * @param predicate the predicate to test
-     * @return the found entity
+     * @param idKey the key of the id
+     * @param id the entity id
+     * @return the entity with the id, null if none
+     * @see ID for id
      * @see E for entity
-     * @see Predicate for predicate
      */
-    @Override
-    public E findOne(@NonNull Predicate<E> predicate) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Find all entities matching the given predicate.
-     *
-     * @param predicate the predicate to test
-     * @return the found entities
-     * @see E for entity
-     * @see Predicate for predicate
-     */
-    @Override
-    public List<E> findAll(@NonNull Predicate<E> predicate) {
-        throw new UnsupportedOperationException();
+    public E find(@NonNull String idKey, @NonNull ID id) {
+        return newEntity(collection.find(new Document(idKey, id.toString())).first());
     }
     
     /**
@@ -80,7 +75,13 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
      */
     @Override
     public List<E> findAll() {
-        throw new UnsupportedOperationException();
+        List<E> entities = new ArrayList<>();
+        try (MongoCursor<Document> cursor = collection.find().cursor()) {
+            while (cursor.hasNext()) { // Add the entity to the list
+                entities.add(newEntity(cursor.next()));
+            }
+        }
+        return Collections.unmodifiableList(entities);
     }
     
     /**
@@ -91,48 +92,30 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
      */
     @Override
     public void saveAll(@NonNull E... entities) {
-        Map<String, List<me.braydon.feather.data.Document<Object>>> toSave = new HashMap<>(); // The documents to save
+        List<UpdateOneModel<Document>> updateModels = new ArrayList<>(); // The update models to bulk write
         
-        // Iterate over the given entities and ensure they
-        // are all valid, and if they are, collect them so
-        // we can bulk save them later
         for (E entity : entities) {
-            EntityUtils.ensureValid(entity, false); // Ensure our entity is valid
-            String collectionName = entity.getClass().getAnnotation(Collection.class).name(); // The name of the collection
+            me.braydon.feather.data.Document<Object> document = new me.braydon.feather.data.Document<>(entity); // Create a document from the entity
             
-            // Add the document to our list of documents to save
-            List<me.braydon.feather.data.Document<Object>> documents = toSave.getOrDefault(collectionName, new ArrayList<>());
-            documents.add(new me.braydon.feather.data.Document<>(entity));
-            toSave.put(collectionName, documents);
-        }
-        
-        // Iterate over the documents we want to save, and create
-        // an update model for them, as well as update indexes.
-        for (Map.Entry<String, List<me.braydon.feather.data.Document<Object>>> entry : toSave.entrySet()) {
-            MongoCollection<Document> collection = getDatabase().getDatabase().getCollection(entry.getKey()); // The collection to save to
+            // Add our update model to the list
+            updateModels.add(new UpdateOneModel<>(
+                Filters.eq(document.getIdKey(), document.getKey()),
+                new Document("$set", new Document(document.toMappedData())),
+                new UpdateOptions().upsert(true)
+            ));
             
-            List<UpdateOneModel<Document>> updateModels = new ArrayList<>();
-            for (me.braydon.feather.data.Document<Object> document : entry.getValue()) {
-                // Add or update model to the list
-                updateModels.add(new UpdateOneModel<>(
-                    Filters.eq(document.getIdKey(), document.getKey()),
-                    new Document("$set", new Document(document.toMappedData())),
-                    new UpdateOptions().upsert(true)
-                ));
-                
-                // Create indexes for @Index fields
-                for (Map.Entry<String, Tuple<Field, Object>> mappedEntry : document.getMappedData().entrySet()) {
-                    java.lang.reflect.Field field = mappedEntry.getValue().getLeft();
-                    if (field.isAnnotationPresent(Index.class)) {
-                        collection.createIndex(Indexes.text(mappedEntry.getKey()));
-                    }
+            // Create indexes for @Index fields specified in the entity
+            for (Map.Entry<String, Tuple<Field, Object>> mappedEntry : document.getMappedData().entrySet()) {
+                java.lang.reflect.Field field = mappedEntry.getValue().getLeft();
+                if (field.isAnnotationPresent(Index.class)) {
+                    collection.createIndex(Indexes.text(mappedEntry.getKey()));
                 }
             }
-            
-            // We have updates models present, bulk write them to the database
-            if (!updateModels.isEmpty()) {
-                collection.bulkWrite(updateModels);
-            }
+        }
+        
+        // We have update models to execute, bulk write them
+        if (!updateModels.isEmpty()) {
+            collection.bulkWrite(updateModels);
         }
     }
     
@@ -144,7 +127,7 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
      */
     @Override
     public long count() {
-        throw new UnsupportedOperationException();
+        return collection.countDocuments();
     }
     
     /**
@@ -155,6 +138,7 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
      */
     @Override
     public void drop(@NonNull E entity) {
-        throw new UnsupportedOperationException();
+        me.braydon.feather.data.Document<Object> document = new me.braydon.feather.data.Document<>(entity); // Create a document from the entity
+        collection.deleteOne(new Document(document.getIdKey(), document.getKey())); // Delete the entity
     }
 }

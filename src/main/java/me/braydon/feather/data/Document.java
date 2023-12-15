@@ -1,13 +1,18 @@
+/*
+ * Copyright (c) 2023 Braydon (Rainnny). All rights reserved.
+ *
+ * For inquiries, please contact braydonrainnny@gmail.com
+ */
 package me.braydon.feather.data;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 import me.braydon.feather.FeatherSettings;
-import me.braydon.feather.annotation.Collection;
 import me.braydon.feather.annotation.Field;
 import me.braydon.feather.annotation.Id;
 import me.braydon.feather.annotation.Serializable;
+import me.braydon.feather.common.FieldUtils;
 import me.braydon.feather.common.Tuple;
 import me.braydon.feather.database.IDatabase;
 
@@ -18,11 +23,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * A document is a key-value pair that is stored
- * within a {@link Collection}. This document is
- * based on the Bson {@link org.bson.Document}
- * in MongoDB, however this document is universal
- * between all {@link IDatabase}'s.
+ * A document is a key-value pair that is stored within
+ * a collection. This document is based on the Bson
+ * {@link org.bson.Document} in MongoDB, however this
+ * document is universal between all {@link IDatabase}'s.
  *
  * @author Braydon
  * @param <V> the type of value this document holds
@@ -61,14 +65,10 @@ public class Document<V> {
                 continue;
             }
             field.setAccessible(true); // Make our field accessible
-            boolean idField = field.isAnnotationPresent(Id.class); // Is this field annotated with @Id?
-            Field annotation = field.getAnnotation(Field.class); // Get the @Field annotation
-            String key = idField ? field.getAnnotation(Id.class).key() : annotation.key(); // The key of the database field
-            if (key.isEmpty()) { // No field in the annotation, use the field name
-                key = field.getName();
-            }
+            String key = FieldUtils.extractKey(field); // The key of the database field
+            
             // The field is annotated with @Id, save it for later
-            if (idField) {
+            if (field.isAnnotationPresent(Id.class)) {
                 idKey = key;
             }
             Class<?> fieldType = field.getType(); // The type of the field
@@ -87,7 +87,7 @@ public class Document<V> {
             }
         }
         assert idKey != null; // We need an id key
-        this.idKey = idKey; // We have our id key
+        this.idKey = idKey; // Set our id key
         
         Tuple<java.lang.reflect.Field, V> key = mappedData.get(idKey); // Get the id from the data map
         if (key == null) { // The element is missing an id field

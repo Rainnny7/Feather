@@ -1,7 +1,11 @@
+/*
+ * Copyright (c) 2023 Braydon (Rainnny). All rights reserved.
+ *
+ * For inquiries, please contact braydonrainnny@gmail.com
+ */
 package me.braydon.feather.database;
 
 import lombok.NonNull;
-import me.braydon.feather.repository.Repository;
 
 import java.io.Closeable;
 
@@ -11,9 +15,8 @@ import java.io.Closeable;
  * @author Braydon
  * @param <B> the bootstrap class of this database
  * @param <C> the type of credentials this database uses
- * @param <R> the type of repository for this database
  */
-public interface IDatabase<B, C, R extends Repository<?, ?, ?>> extends Closeable {
+public interface IDatabase<B, C> extends Closeable {
     /**
      * Get the name of this database.
      *
@@ -25,8 +28,9 @@ public interface IDatabase<B, C, R extends Repository<?, ?, ?>> extends Closeabl
      * Initialize a connection to this database.
      *
      * @param credentials the optional credentials to use
+     * @throws IllegalStateException if already connected
      */
-    void connect(C credentials);
+    void connect(C credentials) throws IllegalStateException;
     
     /**
      * Check if this database is connected.
@@ -50,15 +54,4 @@ public interface IDatabase<B, C, R extends Repository<?, ?, ?>> extends Closeabl
      * @see B for bootstrap class
      */
     B getBootstrap();
-    
-    /**
-     * Create a new repository
-     * using this database.
-     *
-     * @param <ID> the id type
-     * @param <E> the entity type
-     * @return the repository instance
-     * @see R for repository
-     */
-    @NonNull <ID, E> R newRepository();
 }

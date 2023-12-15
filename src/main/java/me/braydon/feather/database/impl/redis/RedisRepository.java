@@ -1,10 +1,14 @@
+/*
+ * Copyright (c) 2023 Braydon (Rainnny). All rights reserved.
+ *
+ * For inquiries, please contact braydonrainnny@gmail.com
+ */
 package me.braydon.feather.database.impl.redis;
 
 import lombok.NonNull;
 import me.braydon.feather.repository.Repository;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * The {@link Redis} {@link Repository} implementation.
@@ -14,8 +18,8 @@ import java.util.function.Predicate;
  * @param <E> the entity type this repository stores
  */
 public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
-    public RedisRepository(@NonNull Redis database) {
-        super(database);
+    public RedisRepository(@NonNull Redis database, @NonNull Class<? extends E> entityClass) {
+        super(database, entityClass);
     }
     
     /**
@@ -28,32 +32,6 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
      */
     @Override
     public E find(@NonNull ID id) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Find the entity matching the given predicate.
-     *
-     * @param predicate the predicate to test
-     * @return the found entity
-     * @see E for entity
-     * @see Predicate for predicate
-     */
-    @Override
-    public E findOne(@NonNull Predicate<E> predicate) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Find all entities matching the given predicate.
-     *
-     * @param predicate the predicate to test
-     * @return the found entities
-     * @see E for entity
-     * @see Predicate for predicate
-     */
-    @Override
-    public List<E> findAll(@NonNull Predicate<E> predicate) {
         throw new UnsupportedOperationException();
     }
     

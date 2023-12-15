@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2023 Braydon (Rainnny). All rights reserved.
+ *
+ * For inquiries, please contact braydonrainnny@gmail.com
+ */
 package me.braydon.feather.database.impl.mongodb;
 
 import com.mongodb.BasicDBObject;
@@ -15,10 +20,9 @@ import me.braydon.feather.database.IDatabase;
  * @author Braydon
  * @see MongoClient for the bootstrap class
  * @see ConnectionString for the credentials class
- * @see MongoRepository for the repository class
  * @see <a href="https://www.mongodb.com">MongoDB Official Site</a>
  */
-public class MongoDB implements IDatabase<MongoClient, ConnectionString, MongoRepository<?, ?>> {
+public class MongoDB implements IDatabase<MongoClient, ConnectionString> {
     /**
      * The current {@link MongoClient} instance.
      */
@@ -43,9 +47,11 @@ public class MongoDB implements IDatabase<MongoClient, ConnectionString, MongoRe
      * Initialize a connection to this database.
      *
      * @param credentials the optional credentials to use
+     * @throws IllegalArgumentException if no credentials or database name is provided
+     * @throws IllegalStateException if already connected
      */
     @Override
-    public void connect(ConnectionString credentials) {
+    public void connect(ConnectionString credentials) throws IllegalArgumentException, IllegalStateException {
         if (credentials == null) { // We need valid credentials
             throw new IllegalArgumentException("No credentials defined");
         }
@@ -102,15 +108,22 @@ public class MongoDB implements IDatabase<MongoClient, ConnectionString, MongoRe
     }
     
     /**
-     * Create a new repository
-     * using this database.
+     * Create a new repository using this database.
      *
+     * @param <ID> the identifier for type for entities
+     * @param <E> the entity type the repository stores
+     * @param collectionName the collection name for the repository
+     * @param entityClass the class of the entity the repository uses
      * @return the repository instance
+     * @throws IllegalStateException if not connected
      * @see MongoRepository for repository
      */
-    @Override @NonNull
-    public <ID, E> MongoRepository<ID, E> newRepository() {
-        return new MongoRepository<>(this);
+    @NonNull
+    public <ID, E> MongoRepository<ID, E> newRepository(@NonNull String collectionName, @NonNull Class<? extends E> entityClass) {
+        if (!isConnected()) { // Not connected
+            throw new IllegalStateException("Not connected");
+        }
+        return new MongoRepository<>(this, entityClass, database.getCollection(collectionName));
     }
     
     /**

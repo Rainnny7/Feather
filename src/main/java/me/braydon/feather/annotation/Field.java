@@ -1,10 +1,15 @@
+/*
+ * Copyright (c) 2023 Braydon (Rainnny). All rights reserved.
+ *
+ * For inquiries, please contact braydonrainnny@gmail.com
+ */
 package me.braydon.feather.annotation;
 
 import java.lang.annotation.*;
 
 /**
  * Fields tagged with this annotation will be
- * treated as a field within a {@link Collection}.
+ * treated as a field within a collection.
  *
  * @author Braydon
  */

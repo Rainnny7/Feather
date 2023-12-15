@@ -1,9 +1,11 @@
+/*
+ * Copyright (c) 2023 Braydon (Rainnny). All rights reserved.
+ *
+ * For inquiries, please contact braydonrainnny@gmail.com
+ */
 package me.braydon.feather.common;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Represents an object that
@@ -13,7 +15,7 @@ import lombok.Setter;
  * @param <L> the left value
  * @param <R> the right value
  */
-@NoArgsConstructor @AllArgsConstructor @Setter @Getter
+@NoArgsConstructor @AllArgsConstructor @Setter @Getter @ToString
 public class Tuple<L, R> {
     /**
      * The left value of this tuple.
