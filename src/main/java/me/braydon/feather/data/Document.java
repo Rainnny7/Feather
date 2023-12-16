@@ -63,14 +63,16 @@ public class Document<V> {
         String idKey = null; // The key for the id field
         java.lang.reflect.Field rawDataField = null;
         for (java.lang.reflect.Field field : clazz.getDeclaredFields()) {
+            // Raw data field, save it for later
+            if (field.isAnnotationPresent(RawData.class)) {
+                rawDataField = field;
+                continue;
+            }
             // Field is missing the @Field annotation, skip it
             if (!field.isAnnotationPresent(Field.class)) {
                 continue;
             }
             field.setAccessible(true); // Make our field accessible
-            if (field.isAnnotationPresent(RawData.class)) { // Raw data field, save it for later
-                rawDataField = field;
-            }
             String key = FieldUtils.extractKey(field); // The key of the database field
             
             // The field is annotated with @Id, save it for later
@@ -90,7 +92,8 @@ public class Document<V> {
         }
         assert idKey != null; // We need an id key
         if (rawDataField != null) { // We have a raw data field, set it
-            rawDataField.set(element, toMappedData());
+            rawDataField.setAccessible(true); // Make our field accessible
+            rawDataField.set(element, toMappedData()); // Set the raw data field to our mapped document
         }
         this.idKey = idKey; // Set our id key
         
