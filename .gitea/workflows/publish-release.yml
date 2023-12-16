@@ -1,4 +1,4 @@
-name: Maven Build
+name: Publish Release
 
 on:
   push:
@@ -7,9 +7,8 @@ on:
       - '*'
 
 jobs:
-  # Maven Build Job
-  build:
-    name: Maven Build
+  publish:
+    name: Publish Release
     strategy:
       matrix:
         arch: [ubuntu-latest]
@@ -61,22 +60,11 @@ jobs:
       - name: Publish to Maven
         run: mvn deploy -Pgen-javadocs -B -Dstyle.color=always --update-snapshots -T6C -e
 
-  # Publish Job
-  publish:
-    name: Maven Build
-    strategy:
-      matrix:
-        arch: [ ubuntu-latest ]
-        java-version: [ 8 ]
-        maven-version: [ 3.9.4 ]
-    runs-on: ${{ matrix.arch }}
-
-    # Steps
-    steps:
       # Generate changelog
       - name: Generate Changelog
         id: changelog
         uses: https://github.com/mathiasvr/command-output@v2.0.0
+        if: ${{ github.ref.action == 'master' }}
         with:
           run: |
             npx conventional-changelog-cli -p angular -i CHANGELOG.md -s --skip-unstable
@@ -87,6 +75,7 @@ jobs:
       # so we can use it later
       - name: Extract Maven project version
         shell: bash -l {0}
+        if: ${{ github.ref.action == 'master' }}
         run: |
           RELEASE_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
           echo "Project version: $RELEASE_VERSION"
@@ -96,6 +85,7 @@ jobs:
       - name: Publish Release
         id: publish-release
         uses: https://git.rainnny.club/Rainnny/release-action@main
+        if: ${{ github.ref.action == 'master' }}
         with:
           api_key: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           tag: Feather-${{ env.RELEASE_VERSION }}
