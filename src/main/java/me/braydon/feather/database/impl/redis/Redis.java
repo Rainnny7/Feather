@@ -57,7 +57,7 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
             throw new IllegalStateException("Already connected");
         }
         if (client != null) { // We have a client, close it first
-            client.close();
+            client.shutdown();
         }
         if (connection != null) { // We have a connection, close it first
             connection.close();
@@ -146,7 +146,7 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
     @Override
     public void close() {
         if (client != null) {
-            client.close();
+            client.shutdown();
         }
         if (connection != null) {
             connection.close();
