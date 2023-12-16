@@ -120,8 +120,12 @@ public abstract class Repository<D extends IDatabase<?, ?>, ID, E> {
             Constructor<? extends E> constructor = entityClass.getConstructor(); // Get the no args constructor
             E entity = constructor.newInstance(); // Create the entity
             
-            // Get the field tagged with @Id
+            // Get the field tagged with @Field
             for (Field field : entityClass.getDeclaredFields()) {
+                // Not the field we're looking for
+                if (!field.isAnnotationPresent(me.braydon.feather.annotation.Field.class)) {
+                    continue;
+                }
                 String key = FieldUtils.extractKey(field); // The key of the database field
                 Class<?> type = field.getType(); // The type of the field
                 Object value = mappedData.get(key); // The value of the field
