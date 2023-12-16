@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import me.braydon.feather.FeatherSettings;
+import me.braydon.feather.annotation.RawData;
 import me.braydon.feather.annotation.Serializable;
 import me.braydon.feather.common.FieldUtils;
 
@@ -121,7 +122,14 @@ public abstract class Repository<D extends IDatabase<?, ?>, ID, E> {
             E entity = constructor.newInstance(); // Create the entity
             
             // Get the field tagged with @Field
+            java.lang.reflect.Field rawDataField = null; // The raw data field if defined
             for (Field field : entityClass.getDeclaredFields()) {
+                // Raw data field, save it for later
+                if (field.isAnnotationPresent(RawData.class)) {
+                    rawDataField = field;
+                    continue;
+                }
+                
                 // Not the field we're looking for
                 if (!field.isAnnotationPresent(me.braydon.feather.annotation.Field.class)) {
                     continue;
@@ -140,6 +148,10 @@ public abstract class Repository<D extends IDatabase<?, ?>, ID, E> {
                 // Set the value of the field
                 field.setAccessible(true);
                 field.set(entity, value);
+            }
+            if (rawDataField != null) { // We have a raw data field, set it
+                rawDataField.setAccessible(true); // Make our field accessible
+                rawDataField.set(entity, mappedData); // Set the raw data field to our mapped document
             }
             return entity;
         } catch (NoSuchMethodException ex) { // We need our no args constructor

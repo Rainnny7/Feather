@@ -61,7 +61,7 @@ public class Document<V> {
     public Document(@NonNull Object element) {
         Class<?> clazz = element.getClass(); // Get the element class
         String idKey = null; // The key for the id field
-        java.lang.reflect.Field rawDataField = null;
+        java.lang.reflect.Field rawDataField = null; // The raw data field if defined
         for (java.lang.reflect.Field field : clazz.getDeclaredFields()) {
             // Raw data field, save it for later
             if (field.isAnnotationPresent(RawData.class)) {
