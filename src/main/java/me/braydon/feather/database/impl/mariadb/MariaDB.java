@@ -5,13 +5,12 @@
  */
 package me.braydon.feather.database.impl.mariadb;
 
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.NonNull;
 import me.braydon.feather.database.IDatabase;
 
 /**
- * The {@link IDatabase} implementation for MariaDB (& other MySQL servers).
+ * The {@link IDatabase} implementation for MariaDB (and other MySQL servers).
  *
  * @author Braydon
  * @see HikariDataSource for the bootstrap class
@@ -44,23 +43,24 @@ public class MariaDB implements IDatabase<HikariDataSource, MariaDBAuthorization
      */
     @Override
     public void connect(MariaDBAuthorization credentials) throws IllegalArgumentException, IllegalStateException {
-        if (credentials == null) { // We need valid credentials
-            throw new IllegalArgumentException("No credentials defined");
-        }
-        if (isConnected()) { // Already connected
-            throw new IllegalStateException("Already connected");
-        }
-        if (dataSource != null) { // We have a data source, close it first
-            dataSource.close();
-        }
-        HikariConfig config = credentials.getHikariConfig(); // Get the custom config
-        if (config == null) { // No custom config, make a new one
-            config = new HikariConfig();
-        }
-        config.setJdbcUrl(credentials.getJdbcUrl()); // Set the JDBC connection URL
-        config.setUsername(credentials.getUsername()); // Set the username
-        config.setPassword(credentials.getPassword()); // Set the password
-        dataSource = new HikariDataSource(config); // Create a new data source
+//        if (credentials == null) { // We need valid credentials
+//            throw new IllegalArgumentException("No credentials defined");
+//        }
+//        if (isConnected()) { // Already connected
+//            throw new IllegalStateException("Already connected");
+//        }
+//        if (dataSource != null) { // We have a data source, close it first
+//            dataSource.close();
+//        }
+//        HikariConfig config = credentials.getHikariConfig(); // Get the custom config
+//        if (config == null) { // No custom config, make a new one
+//            config = new HikariConfig();
+//        }
+//        config.setJdbcUrl(credentials.getJdbcUrl()); // Set the JDBC connection URL
+//        config.setUsername(credentials.getUsername()); // Set the username
+//        config.setPassword(credentials.getPassword()); // Set the password
+//        dataSource = new HikariDataSource(config); // Create a new data source
+        throw new UnsupportedOperationException(); // Not impl yet
     }
     
     /**
