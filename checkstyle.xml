@@ -91,9 +91,6 @@
         <!-- See: https://checkstyle.org/checks/javadoc/javadocmissingwhitespaceafterasterisk.html#JavadocMissingWhitespaceAfterAsterisk -->
         <module name="JavadocMissingWhitespaceAfterAsterisk" />
 
-        <!-- See: https://checkstyle.org/checks/javadoc/javadocparagraph.html#JavadocParagraph -->
-        <module name="JavadocParagraph" />
-
         <!-- See: https://checkstyle.org/checks/javadoc/javadocstyle.html#JavadocStyle -->
         <module name="JavadocStyle" />
 
@@ -214,11 +211,6 @@
 
         <!-- See: https://checkstyle.org/checks/javadoc/singlelinejavadoc.html#SingleLineJavadoc -->
         <module name="SingleLineJavadoc" />
-
-        <!-- See: https://checkstyle.org/checks/javadoc/requireemptylinebeforeblocktaggroup.html#RequireEmptyLineBeforeBlockTagGroup -->
-        <module name="RequireEmptyLineBeforeBlockTagGroup">
-            <property name="violateExecutionOnNonTightHtml" value="true" />
-        </module>
 
         <!-- See: https://checkstyle.org/checks/whitespace/singlespaceseparator.html#SingleSpaceSeparator -->
         <module name="SingleSpaceSeparator" />

@@ -1,14 +1,15 @@
-name: Publish Release
+name: Maven Build
 
 on:
   push:
-    branches: [master]
+    branches: [master, develop]
     tags:
       - '*'
 
 jobs:
-  publish:
-    name: Publish Release
+  # Maven Build Job
+  build:
+    name: Maven Build
     strategy:
       matrix:
         arch: [ubuntu-latest]
@@ -60,6 +61,18 @@ jobs:
       - name: Publish to Maven
         run: mvn deploy -Pgen-javadocs -B -Dstyle.color=always --update-snapshots -T6C -e
 
+  # Publish Job
+  publish:
+    name: Maven Build
+    strategy:
+      matrix:
+        arch: [ ubuntu-latest ]
+        java-version: [ 8 ]
+        maven-version: [ 3.9.4 ]
+    runs-on: ${{ matrix.arch }}
+
+    # Steps
+    steps:
       # Generate changelog
       - name: Generate Changelog
         id: changelog

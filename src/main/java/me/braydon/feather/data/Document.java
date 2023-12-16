@@ -7,10 +7,12 @@ package me.braydon.feather.data;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import me.braydon.feather.FeatherSettings;
 import me.braydon.feather.annotation.Field;
 import me.braydon.feather.annotation.Id;
+import me.braydon.feather.annotation.RawData;
 import me.braydon.feather.annotation.Serializable;
 import me.braydon.feather.common.FieldUtils;
 import me.braydon.feather.common.Tuple;
@@ -55,15 +57,20 @@ public class Document<V> {
      */
     private final Map<String, Tuple<java.lang.reflect.Field, V>> mappedData = Collections.synchronizedMap(new LinkedHashMap<>());
     
+    @SneakyThrows
     public Document(@NonNull Object element) {
         Class<?> clazz = element.getClass(); // Get the element class
         String idKey = null; // The key for the id field
+        java.lang.reflect.Field rawDataField = null;
         for (java.lang.reflect.Field field : clazz.getDeclaredFields()) {
             // Field is missing the @Field annotation, skip it
             if (!field.isAnnotationPresent(Field.class)) {
                 continue;
             }
             field.setAccessible(true); // Make our field accessible
+            if (field.isAnnotationPresent(RawData.class)) { // Raw data field, save it for later
+                rawDataField = field;
+            }
             String key = FieldUtils.extractKey(field); // The key of the database field
             
             // The field is annotated with @Id, save it for later
@@ -71,21 +78,20 @@ public class Document<V> {
                 idKey = key;
             }
             Class<?> fieldType = field.getType(); // The type of the field
-            try {
-                Object value = field.get(element); // The value of the field
-                
-                if (field.isAnnotationPresent(Serializable.class)) { // Serialize the field if @Serializable is present
-                    value = FeatherSettings.getGson().toJson(field.get(element));
-                } else if (fieldType == UUID.class) { // Convert UUIDs into strings
-                    value = value.toString();
-                }
-                
-                mappedData.put(key, new Tuple<>(field, (V) value)); // Store in our map
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
+            Object value = field.get(element); // The value of the field
+            
+            if (field.isAnnotationPresent(Serializable.class)) { // Serialize the field if @Serializable is present
+                value = FeatherSettings.getGson().toJson(field.get(element));
+            } else if (fieldType == UUID.class) { // Convert UUIDs into strings
+                value = value.toString();
             }
+            
+            mappedData.put(key, new Tuple<>(field, (V) value)); // Store in our map
         }
         assert idKey != null; // We need an id key
+        if (rawDataField != null) { // We have a raw data field, set it
+            rawDataField.set(element, mappedData);
+        }
         this.idKey = idKey; // Set our id key
         
         Tuple<java.lang.reflect.Field, V> key = mappedData.get(idKey); // Get the id from the data map
