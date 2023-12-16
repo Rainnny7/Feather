@@ -90,7 +90,7 @@ public class Document<V> {
         }
         assert idKey != null; // We need an id key
         if (rawDataField != null) { // We have a raw data field, set it
-            rawDataField.set(element, mappedData);
+            rawDataField.set(element, toMappedData());
         }
         this.idKey = idKey; // Set our id key
         
