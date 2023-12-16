@@ -124,7 +124,7 @@ public class MongoDB implements IDatabase<MongoClient, ConnectionString> {
         if (!isConnected()) { // Not connected
             throw new IllegalStateException("Not connected");
         }
-        return new MongoRepository<>(this, entityClass, database.getCollection(collectionName));
+        return new MongoRepository<>(this, entityClass, collectionName);
     }
     
     /**

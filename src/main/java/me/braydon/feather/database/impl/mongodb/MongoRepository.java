@@ -36,9 +36,9 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
      */
     @NonNull private final MongoCollection<Document> collection;
     
-    public MongoRepository(@NonNull MongoDB database, @NonNull Class<? extends E> entityClass, @NonNull MongoCollection<Document> collection) {
+    public MongoRepository(@NonNull MongoDB database, @NonNull Class<? extends E> entityClass, @NonNull String collectionName) {
         super(database, entityClass);
-        this.collection = collection;
+        collection = database.getDatabase().getCollection(collectionName); // Get the collection by the name
     }
     
     /**
