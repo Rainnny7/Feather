@@ -12,16 +12,16 @@ import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.UpdateOptions;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import me.braydon.feather.common.Tuple;
 import me.braydon.feather.database.Repository;
+import me.braydon.feather.database.impl.mongodb.annotation.CustomDocument;
 import me.braydon.feather.database.impl.mongodb.annotation.Index;
 import org.bson.Document;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * The {@link MongoDB} {@link Repository} implementation.
@@ -90,17 +90,29 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
      * @param entities the entities to save
      * @see E for entity
      */
-    @Override
+    @Override @SneakyThrows
     public void saveAll(@NonNull E... entities) {
         List<UpdateOneModel<Document>> updateModels = new ArrayList<>(); // The update models to bulk write
         
         for (E entity : entities) {
             me.braydon.feather.data.Document<Object> document = new me.braydon.feather.data.Document<>(entity); // Create a document from the entity
+            Document bsonDocument; // The Bson document to save
+            
+            Method customDocumentMethod = Arrays.stream(entity.getClass().getDeclaredMethods())
+                                              .filter(method -> method.isAnnotationPresent(CustomDocument.class))
+                                              .findFirst().orElse(null); // Get the @CustomDocument method
+            
+            // We have a custom document method
+            if (customDocumentMethod != null && (customDocumentMethod.getReturnType() == Document.class)) {
+                bsonDocument = (Document) customDocumentMethod.invoke(entity); // Get our custom document
+            } else { // Otherwise, use our mapped data
+                bsonDocument = new Document(document.toMappedData());
+            }
             
             // Add our update model to the list
             updateModels.add(new UpdateOneModel<>(
                 Filters.eq(document.getIdKey(), document.getKey()),
-                new Document("$set", new Document(document.toMappedData())),
+                new Document("$set", bsonDocument),
                 new UpdateOptions().upsert(true)
             ));
             
