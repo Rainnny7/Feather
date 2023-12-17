@@ -19,7 +19,7 @@ import me.braydon.feather.database.IDatabase;
  * @see RedisURI for the credentials class
  * @see <a href="https://redis.io">Redis Official Site</a>
  */
-public class Redis implements IDatabase<StatefulRedisConnection<String, String>, RedisURI> {
+public class Redis implements IDatabase<StatefulRedisConnection<String, String>, String> {
     /**
      * The current {@link RedisClient} instance.
      */
@@ -43,14 +43,13 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
     /**
      * Initialize a connection to this database.
      *
-     * @param credentials the optional credentials to use
+     * @param uri the optional credentials to use
      * @throws IllegalArgumentException if no credentials are provided
      * @throws IllegalStateException if already connected
-     * @see RedisURI for credentials
      */
     @Override
-    public void connect(RedisURI credentials) throws IllegalArgumentException, IllegalStateException {
-        if (credentials == null) { // We need valid credentials
+    public void connect(String uri) throws IllegalArgumentException, IllegalStateException {
+        if (uri == null) { // We need valid credentials
             throw new IllegalArgumentException("No credentials defined");
         }
         if (isConnected()) { // Already connected
@@ -62,7 +61,7 @@ public class Redis implements IDatabase<StatefulRedisConnection<String, String>,
         if (connection != null) { // We have a connection, close it first
             connection.close();
         }
-        client = RedisClient.create(credentials); // Create a new client
+        client = RedisClient.create(uri); // Create a new client
         connection = client.connect(); // Connect to the Redis server
     }
     
