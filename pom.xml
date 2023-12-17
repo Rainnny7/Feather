@@ -40,14 +40,6 @@
                 <version>3.5.1</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-
-                    <!-- Relocate conflicting packages -->
-                    <relocations>
-                        <relocation>
-                            <pattern>io.netty</pattern>
-                            <shadedPattern>me.braydon.feather.shaded.netty</shadedPattern>
-                        </relocation>
-                    </relocations>
                 </configuration>
                 <executions>
                     <execution>
@@ -176,6 +168,13 @@
         </repository>
     </distributionManagement>
 
+    <repositories>
+        <repository>
+            <id>rainnny-repo-public</id>
+            <url>https://maven.rainnny.club/public</url>
+        </repository>
+    </repositories>
+
     <!-- Depends -->
     <dependencies>
         <dependency>
@@ -207,7 +206,7 @@
         <dependency>
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
-            <version>6.3.0.RELEASE</version>
+            <version>7.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
