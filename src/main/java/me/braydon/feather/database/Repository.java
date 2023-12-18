@@ -129,7 +129,6 @@ public abstract class Repository<D extends IDatabase<?, ?>, ID, E> {
                     rawDataField = field;
                     continue;
                 }
-                
                 // Not the field we're looking for
                 if (!field.isAnnotationPresent(me.braydon.feather.annotation.Field.class)) {
                     continue;

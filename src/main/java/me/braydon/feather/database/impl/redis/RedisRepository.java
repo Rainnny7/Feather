@@ -7,12 +7,10 @@ package me.braydon.feather.database.impl.redis;
 
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.NonNull;
-import me.braydon.feather.common.Tuple;
 import me.braydon.feather.data.Document;
 import me.braydon.feather.database.Repository;
 import me.braydon.feather.database.impl.redis.annotation.TTL;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -86,15 +84,13 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
             commands.hmset(key, document.toMappedData()); // Set the mapped document in the database
             
             // Handling @TTL annotations
-            for (Tuple<Field, String> tuple : document.getMappedData().values()) {
-                Field field = tuple.getLeft();
-                if (!field.isAnnotationPresent(TTL.class)) { // Missing @TTL
-                    continue;
-                }
-                long ttl = field.getAnnotation(TTL.class).value(); // Get the ttl value
-                if (ttl > 0L) { // Value is above zero, set it
-                    commands.expire(key, ttl);
-                }
+            Class<?> clazz = entity.getClass(); // The entity class
+            if (!clazz.isAnnotationPresent(TTL.class)) { // Missing @TTL
+                continue;
+            }
+            long ttl = clazz.getAnnotation(TTL.class).value(); // Get the ttl value
+            if (ttl > 0L) { // Value is above zero, set it
+                commands.expire(key, ttl);
             }
         }
         if (multi) { // Execute the commands in bulk

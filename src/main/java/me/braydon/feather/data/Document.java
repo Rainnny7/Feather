@@ -113,8 +113,12 @@ public class Document<V> {
     @NonNull
     public Map<String, V> toMappedData() {
         Map<String, V> mappedData = new LinkedHashMap<>(); // The mapped data
-        for (Map.Entry<String, Tuple<java.lang.reflect.Field, V>> entry : this.mappedData.entrySet()) {
-            mappedData.put(entry.getKey(), entry.getValue().getRight());
+        try {
+            for (Map.Entry<String, Tuple<java.lang.reflect.Field, V>> entry : this.mappedData.entrySet()) {
+                mappedData.put(entry.getKey(), entry.getValue().getRight());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return mappedData;
     }

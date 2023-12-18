@@ -8,7 +8,7 @@ package me.braydon.feather.database.impl.redis.annotation;
 import java.lang.annotation.*;
 
 /**
- * Fields flagged with this annotation will
+ * Entities tagged with this annotation will
  * expire after the amount of defined seconds.
  *
  * @author Braydon
