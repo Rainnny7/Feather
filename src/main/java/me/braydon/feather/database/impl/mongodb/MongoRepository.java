@@ -99,7 +99,7 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
         List<UpdateOneModel<Document>> updateModels = new ArrayList<>(); // The update models to bulk write
         
         for (E entity : entities) {
-            me.braydon.feather.data.Document<Object> document = new me.braydon.feather.data.Document<>(entity); // Create a document from the entity
+            me.braydon.feather.data.Document document = new me.braydon.feather.data.Document(entity); // Create a document from the entity
             Document bsonDocument; // The Bson document to save
             
             Method customDocumentMethod = Arrays.stream(entity.getClass().getDeclaredMethods())
@@ -178,7 +178,7 @@ public class MongoRepository<ID, E> extends Repository<MongoDB, ID, E> {
      */
     @Override
     public void drop(@NonNull E entity) {
-        me.braydon.feather.data.Document<Object> document = new me.braydon.feather.data.Document<>(entity); // Create a document from the entity
+        me.braydon.feather.data.Document document = new me.braydon.feather.data.Document(entity); // Create a document from the entity
         collection.deleteOne(new Document(document.getIdKey(), document.getKey())); // Delete the entity
     }
 }

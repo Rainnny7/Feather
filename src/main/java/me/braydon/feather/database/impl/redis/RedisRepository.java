@@ -7,13 +7,13 @@ package me.braydon.feather.database.impl.redis;
 
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.NonNull;
+import me.braydon.feather.common.Tuple;
 import me.braydon.feather.data.Document;
 import me.braydon.feather.database.Repository;
 import me.braydon.feather.database.impl.redis.annotation.TTL;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * The {@link Redis} {@link Repository} implementation.
@@ -79,9 +79,14 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
             commands.multi();
         }
         for (E entity : entities) { // Set our entities
-            Document<String> document = new Document<>(entity); // Create a document from the entity
+            Document document = new Document(entity); // Create a document from the entity
             String key = keyPrefix + ":" + document.getKey(); // The key of this entity
-            commands.hmset(key, document.toMappedData()); // Set the mapped document in the database
+            
+            Map<String, String> mappedData = new HashMap<>();
+            for (Map.Entry<String, Tuple<Field, Object>> entry : document.getMappedData().entrySet()) {
+                mappedData.put(entry.getKey(), String.valueOf(entry.getValue()));
+            }
+            commands.hmset(key, mappedData); // Set the mapped document in the database
             
             // Handling @TTL annotations
             Class<?> clazz = entity.getClass(); // The entity class
@@ -129,7 +134,7 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
      */
     @Override
     public void drop(@NonNull E entity) {
-        me.braydon.feather.data.Document<Object> document = new me.braydon.feather.data.Document<>(entity); // Create a document from the entity
+        me.braydon.feather.data.Document document = new me.braydon.feather.data.Document(entity); // Create a document from the entity
         getDatabase().getBootstrap().sync().del(keyPrefix + ":" + document.getKey());
     }
 }
