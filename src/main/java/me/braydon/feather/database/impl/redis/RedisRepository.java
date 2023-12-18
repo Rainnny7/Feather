@@ -84,7 +84,7 @@ public class RedisRepository<ID, E> extends Repository<Redis, ID, E> {
             
             Map<String, String> mappedData = new HashMap<>();
             for (Map.Entry<String, Tuple<Field, Object>> entry : document.getMappedData().entrySet()) {
-                mappedData.put(entry.getKey(), String.valueOf(entry.getValue()));
+                mappedData.put(entry.getKey(), String.valueOf(entry.getValue().getRight()));
             }
             commands.hmset(key, mappedData); // Set the mapped document in the database
             
