@@ -30,10 +30,9 @@ import java.util.UUID;
  * document is universal between all {@link IDatabase}'s.
  *
  * @author Braydon
- * @param <V> the type of value this document holds
  */
 @Getter @ToString
-public class Document<V> {
+public class Document {
     /**
      * The key to use for the id field.
      */
@@ -52,10 +51,8 @@ public class Document<V> {
      * a tuple that contains the Java field, as well as
      * the field value.
      * </p>
-     *
-     * @see V for value type
      */
-    private final Map<String, Tuple<java.lang.reflect.Field, V>> mappedData = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Map<String, Tuple<java.lang.reflect.Field, Object>> mappedData = Collections.synchronizedMap(new LinkedHashMap<>());
     
     @SneakyThrows
     public Document(@NonNull Object element) {
@@ -88,7 +85,7 @@ public class Document<V> {
                 value = value.toString();
             }
             
-            mappedData.put(key, new Tuple<>(field, (V) value)); // Store in our map
+            mappedData.put(key, new Tuple<>(field, value)); // Store in our map
         }
         assert idKey != null; // We need an id key
         if (rawDataField != null) { // We have a raw data field, set it
@@ -97,7 +94,7 @@ public class Document<V> {
         }
         this.idKey = idKey; // Set our id key
         
-        Tuple<java.lang.reflect.Field, V> key = mappedData.get(idKey); // Get the id from the data map
+        Tuple<java.lang.reflect.Field, Object> key = mappedData.get(idKey); // Get the id from the data map
         if (key == null) { // The element is missing an id field
             throw new IllegalArgumentException("No @Id annotated field found in " + clazz.getSimpleName());
         }
@@ -111,14 +108,10 @@ public class Document<V> {
      * @see #mappedData for stored data
      */
     @NonNull
-    public Map<String, V> toMappedData() {
-        Map<String, V> mappedData = new LinkedHashMap<>(); // The mapped data
-        try {
-            for (Map.Entry<String, Tuple<java.lang.reflect.Field, V>> entry : this.mappedData.entrySet()) {
-                mappedData.put(entry.getKey(), entry.getValue().getRight());
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    public Map<String, Object> toMappedData() {
+        Map<String, Object> mappedData = new LinkedHashMap<>(); // The mapped data
+        for (Map.Entry<String, Tuple<java.lang.reflect.Field, Object>> entry : this.mappedData.entrySet()) {
+            mappedData.put(entry.getKey(), entry.getValue().getRight());
         }
         return mappedData;
     }
